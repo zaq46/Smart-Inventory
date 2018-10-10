@@ -90,6 +90,12 @@ class LoginForm extends Component {
 					</Button>
 				</CardSection>
 
+				<CardSection>
+					<Button onPress={() => this.props.navigation.navigate('Camera')}>
+						CoreML Demo
+					</Button>
+				</CardSection>
+
 			</Card>
 
 		);

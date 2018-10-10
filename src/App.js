@@ -4,6 +4,7 @@ import { Header, Button, Spinner, CardSection } from './components/common';
 import firebase from 'firebase';
 import LoginForm from './components/LoginForm';
 import Signup from './SignupForm/Signup';
+import Camera from './components/Camera';
 import InventoriesList from './components/InventoriesScreen/InventoriesList';
 import { createStackNavigator } from 'react-navigation';
 
@@ -65,6 +66,7 @@ const RootStack = createStackNavigator(
 		Login: LoginForm,
 		Signup: Signup,
 		InventoriesList: InventoriesList,
+		Camera: Camera
 	},
 	{
 		initialRouteName: 'Login',
