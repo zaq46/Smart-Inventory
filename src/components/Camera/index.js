@@ -8,14 +8,15 @@ import {
 
 import CoreMLImage from "react-native-core-ml-image";
 
-const BEST_MATCH_THRESHOLD = 0.5;
+const BEST_MATCH_THRESHOLD = 0.1;
 
 export default class Camera extends Component<{}> {
 
   constructor(props) {
     super(props);
     this.state = {
-      classification: null
+      classification: null,
+      ibmClassification: "ibrahim"
     };
   }
 
@@ -51,21 +52,21 @@ export default class Camera extends Component<{}> {
 
   render() {
     var classification = null;
+    var ibmClassification;
+
 
     if (this.state.bestMatch) {
-      if (this.state.bestMatch && this.state.bestMatch.identifier && this.state.bestMatch.identifier == "hotdog") {
-        classification = "🌭 Hot Dog 🌭";
-      } else {
-        classification = "Not hot dog";
-      }
-
+      if (this.state.bestMatch && this.state.bestMatch.identifier) {
+        classification = this.state.bestMatch.identifier ;
+      } 
     }
 
     return (
       <View style={styles.container}>
-          <CoreMLImage modelFile="HotDogOrNotHotDog" onClassification={(evt) => this.onClassification(evt)}>
+          <CoreMLImage modelFile="MobileNet" onClassification={(evt) => this.onClassification(evt)}>
               <View style={styles.container}>
                 <Text style={styles.info}>{classification}</Text>
+                <Text style={styles.info}>{ibmClassification}</Text>
               </View>
           </CoreMLImage>
       </View>
