@@ -5,10 +5,11 @@ import {
   Text,
   View
 } from 'react-native';
-
+import ButtonSection from './ButtonSection';
+import CameraButton from './cameraButton';
 import CoreMLImage from "react-native-core-ml-image";
 
-const BEST_MATCH_THRESHOLD = 0.1;
+const BEST_MATCH_THRESHOLD = 0.50;
 
 export default class Camera extends Component<{}> {
 
@@ -52,8 +53,6 @@ export default class Camera extends Component<{}> {
 
   render() {
     var classification = null;
-    var ibmClassification;
-
 
     if (this.state.bestMatch) {
       if (this.state.bestMatch && this.state.bestMatch.identifier) {
@@ -63,12 +62,20 @@ export default class Camera extends Component<{}> {
 
     return (
       <View style={styles.container}>
-          <CoreMLImage modelFile="MobileNet" onClassification={(evt) => this.onClassification(evt)}>
+
+          <CoreMLImage 
+          modelFile="Resnet50" 
+          onClassification={(evt) => this.onClassification(evt)}>
               <View style={styles.container}>
                 <Text style={styles.info}>{classification}</Text>
-                <Text style={styles.info}>{ibmClassification}</Text>
+                <ButtonSection>
+                    <CameraButton onPress={() => this.props.navigation.navigate('Signup')}>
+                         Add
+                    </CameraButton>
+                </ButtonSection>
               </View>
           </CoreMLImage>
+
       </View>
     );
   }
