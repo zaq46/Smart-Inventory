@@ -8,6 +8,7 @@ import {
 
 import CoreMLImage from "react-native-core-ml-image";
 import CameraButton from '../ui/CameraButton';
+import CameraButton2 from '../ui/CameraButton2';
 
 
 const BEST_MATCH_THRESHOLD = 0.05;
@@ -74,7 +75,7 @@ export default class Camera extends Component<{}> {
               <View style={styles.container}>
                 <Text style={styles.info}>{classification} {percentage} </Text>
                 <CameraButton onPress={() => { this.props.navigation.navigate('ItemConfirmation', { itemName: 'bike',});}}>
-                </CameraButton>
+                </CameraButton>             
               </View>
           </CoreMLImage>
       </View>
