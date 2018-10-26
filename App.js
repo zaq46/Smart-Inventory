@@ -11,6 +11,8 @@ import getTheme from "./native-base-theme/components/index";
 import commonColor from "./native-base-theme/variables/commonColor";
 import { StyleProvider } from "native-base";
 import Authentication from './src/components/pages/Authentication'
+import Camera from './src/components/pages/Camera'
+import ItemConfirmation from './src/components/pages/ItemConfirmation'
 
 class App extends Component {
 
@@ -48,12 +50,14 @@ const RootStack = createStackNavigator(
   {
     Landing: Landing,
 	  Authentication: Authentication,
+    Camera: Camera,
+    ItemConfirmation: ItemConfirmation
     // Login: LoginForm,
     // Signup: Signup,
     // InventoriesList: InventoriesList,
   },
   {
-    initialRouteName: "Landing"
+    initialRouteName: "Camera"
   },
     {
         headerMode: 'none',
