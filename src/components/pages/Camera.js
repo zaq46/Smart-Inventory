@@ -74,10 +74,10 @@ export default class Camera extends Component<{}> {
           <CoreMLImage modelFile="Resnet50" onClassification={(evt) => this.onClassification(evt)}>
               <View style={styles.container}>
                 <Text style={styles.info}>{classification} {percentage} </Text>
-                <CameraButton onPress={() => { this.props.navigation.navigate('ItemConfirmation', { itemName: 'bike',});}}>
-                </CameraButton>             
               </View>
           </CoreMLImage>
+          <CameraButton onPress={() => { this.props.navigation.navigate('ItemConfirmation', { itemName: 'bike',});}}>
+          </CameraButton>
       </View>
     );
   }
