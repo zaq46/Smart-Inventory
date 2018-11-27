@@ -1,19 +1,29 @@
 import React from 'react';
-import {Text,TextInput, View} from 'react-native';
-import {Button, ButtonGroup, Avatar, SearchBar} from 'react-native-elements';
-import InventoryCardSection from "../ui/InventoryCardSection";
+import {Text,TextInput, View, TouchableOpacity} from 'react-native';
+import {Button, ButtonGroup, Avatar} from 'react-native-elements';
+import CardSection from "../ui/CardSection";
 import Firebase from "../../Firebase";
+import * as firebase from 'firebase';
 import Toaster, { ToastStyles } from 'react-native-toaster'
 import store from "../../redux/store";
+import ImagePicker from 'react-native-image-picker';
+import RNFetchBlob from 'react-native-fetch-blob'
+
+const options = {
+  title: 'SmartInventory',
+  takePhotoButtonTitle: 'Take photo with Camera',
+  chooseFromLibraryButtonTitle: 'Choose photo from Gallery',
+  
+};
 
 class Create extends React.Component {
 
-  state={name: '', disableCreate: true, selectedIndex: 0, message: null, inventories: []}
+  state={name: '', disableCreate: true, selectedIndex: 0, message: null, inventories: [], avatarSource: null}
 
   constructor(props) {
     super(props);
 
-    this.updateIndex = this.updateIndex.bind(this)
+    this.updateIndex = this.updateIndex.bind(this);
 
     store.subscribe(() => {
       // When state will be updated(in our case, when items will be fetched), 
@@ -26,8 +36,67 @@ class Create extends React.Component {
     });
   }
 
+  
+  pickImage = () =>{
+    const Blob = RNFetchBlob.polyfill.Blob
+    const fs = RNFetchBlob.fs
+    window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
+    window.Blob = Blob
+
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response = ', response);
+    
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        const source = { uri: response.uri };
+        const image = source.uri.slice(7)
+        // You can also display the image using data:
+        //const source = { uri: 'data:image/jpeg;base64,' + response.data };
+        //const image = source
+        console.log('before blob', source.uri.slice(7))
+        let uploadBlob = null
+        
+        const imageRef = firebase.storage().ref('Images').child("test1.jpg")
+        
+        let mime = 'image/jpg'
+        fs.readFile(image, 'base64')
+          .then((data) => {
+            return Blob.build(data, { type: `${mime};BASE64` })
+        })
+        .then((blob) => {
+            uploadBlob = blob
+            return imageRef.put(blob, { contentType: mime })
+          })
+          .then(() => {
+            uploadBlob.close()
+            return imageRef.getDownloadURL()
+          })
+          .then((url) => {
+            // URL of the image uploaded on Firebase storage
+            this.setState({
+              avatarSource: url,
+            });
+            console.log('gotcha--->',url);
+            
+          })
+          .catch((error) => {
+            console.log(error);
+     
+          })  
+        
+      }
+    });
+  
+  }
 
   create = () => {
+    console.log(this.state.avatarSource);
+
     var add = true;
     if (this.state.name === ''){
       console.log('Inventory name not set')
@@ -43,7 +112,8 @@ class Create extends React.Component {
       if( add === true){
             ref = Firebase.firestore.collection('Inventories').doc()
             ref.set({
-              image: 'https://c1.staticflickr.com/5/4916/45053006915_f22a94ea77_c.jpg',
+              //image: 'https://c1.staticflickr.com/5/4916/45053006915_f22a94ea77_c.jpg',
+              image: this.state.avatarSource,
               items: [],
               name: this.state.name,
               owner_id: Firebase.auth.currentUser.uid,
@@ -107,11 +177,13 @@ class Create extends React.Component {
           buttonStyle={{backgroundColor:"#2f3a49", borderWidth: 0}}
           textStyle={{color:'#fff'}} />
 
-        <InventoryCardSection>
-          <View style={{flex: 2, height: 100, backgroundColor: '00000000', blurRadius: 1}}/>
-        </InventoryCardSection>
+      
+          <TouchableOpacity onPress={this.pickImage} style={{margin: 25}}>
+            <Text>Select Image</Text>
 
-        { <Toaster message={this.state.message} onHide={()=> {this.setState({message: null})}}/>}
+          </TouchableOpacity>
+
+        {<Toaster message={this.state.message} onHide={()=> {this.setState({message: null})}}/>}
          
         <View style={{width: '40%', alignItems:'stretch'}}>
           <Button onPress={this.create} title='CREATE' disabled={this.state.disableCreate}/>
