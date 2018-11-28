@@ -17,7 +17,7 @@ class ItemConfirmationDetailsPrice extends Component{
 	constructor(props) {
 		super(props);
 		this.state = {
-			price: '00.00'
+			price: '0'
 		}
 	}
 

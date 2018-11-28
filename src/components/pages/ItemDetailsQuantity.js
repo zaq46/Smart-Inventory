@@ -26,6 +26,8 @@ class ItemDetailsQuantity extends Component{
 		for (var i=0; i < text.length; i++) { 
 			if(numbers.indexOf(text[i]) > -1 ) { 
 				newText = newText + text[i]; 
+			} else{
+				return;
 			}
 		}
 		this.props.sendQuantity(newText);

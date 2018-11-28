@@ -19,8 +19,8 @@ class ItemConfirmation extends Component {
 		super(props);
 		const { params } = props.navigation.state;			
 		this.state = {
-	      price: '',
-	      expirationDate: '',
+	      price: '0',
+	      expirationDate: '2018-11-30',
 	      quantity: '1',
 	      name: params.itemName,
 	      imagePath: params.imagePath,
