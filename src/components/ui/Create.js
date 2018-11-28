@@ -7,7 +7,8 @@ import * as firebase from 'firebase';
 import Toaster, { ToastStyles } from 'react-native-toaster'
 import store from "../../redux/store";
 import ImagePicker from 'react-native-image-picker';
-import RNFetchBlob from 'react-native-fetch-blob'
+import RNFetchBlob from 'react-native-fetch-blob';
+import uuid from 'react-native-uuid';
 
 const options = {
   title: 'SmartInventory',
@@ -18,7 +19,9 @@ const options = {
 
 class Create extends React.Component {
 
-  state={name: '', disableCreate: true, selectedIndex: 0, message: null, inventories: [], avatarSource: null}
+  state={name: '', blobDone: false, disableCreate: true, loading: false,
+  selectedIndex: 0, message: null, inventories: [], 
+  avatarSource: 'https://c1.staticflickr.com/5/4916/45053006915_f22a94ea77_c.jpg',}
 
   constructor(props) {
     super(props);
@@ -38,6 +41,11 @@ class Create extends React.Component {
 
   
   pickImage = () =>{
+    this.setState({
+      blobDone: false,
+      loading: true,
+    });
+    
     const Blob = RNFetchBlob.polyfill.Blob
     const fs = RNFetchBlob.fs
     window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
@@ -60,8 +68,8 @@ class Create extends React.Component {
         //const image = source
         console.log('before blob', source.uri.slice(7))
         let uploadBlob = null
-        
-        const imageRef = firebase.storage().ref('Images').child("test1.jpg")
+        var UUID = uuid.v1();
+        const imageRef = firebase.storage().ref('Images').child(UUID + ".jpg")
         
         let mime = 'image/jpg'
         fs.readFile(image, 'base64')
@@ -80,6 +88,9 @@ class Create extends React.Component {
             // URL of the image uploaded on Firebase storage
             this.setState({
               avatarSource: url,
+              blobDone: true,
+              loading: false,
+              disableCreate: !(this.state.name.length > 2),
             });
             console.log('gotcha--->',url);
             
@@ -94,9 +105,10 @@ class Create extends React.Component {
   
   }
 
-  create = () => {
-    console.log(this.state.avatarSource);
-
+  create = async () => {
+    
+    console.log('starting create --->',this.state.avatarSource);
+    this.setState({ disableCreate: true});
     var add = true;
     if (this.state.name === ''){
       console.log('Inventory name not set')
@@ -110,6 +122,7 @@ class Create extends React.Component {
         }
       });
       if( add === true){
+        try {        
             ref = Firebase.firestore.collection('Inventories').doc()
             ref.set({
               //image: 'https://c1.staticflickr.com/5/4916/45053006915_f22a94ea77_c.jpg',
@@ -121,10 +134,11 @@ class Create extends React.Component {
               invite_id: ref.id,
             }).then(ref => {
               console.log('Added document with ID: ', ref.id);
+              this.setState({message: { text: 'Inventory Created!', styles: ToastStyles.success }});
             });
-
-            this.setState({message: { text: 'Inventory Created!', styles: ToastStyles.success }});
-            
+          }catch(err){
+            console.log('cannot create inventory', err)
+          }
         }
         else{
           this.setState({message: { text: 'Cannot Create Inventory! Name already in use.Choose another name.', styles: ToastStyles.error }});
@@ -139,12 +153,13 @@ class Create extends React.Component {
   render(){
     const buttons = ['Shared', 'Private'];
     const { selectedIndex } = this.state;
-    console.log(this.state.inventories);
+    console.log(this.state.blobDone);
+
     return (
       <View style={{flex: 1, height: '100%',width:'100%', backgroundColor: '#2f3a49', alignItems: 'center'}}>
         <TextInput
           onChangeText={(text) => {this.setState({name: text});
-            this.setState({ disableCreate: (this.state.name.length < 2) });}}
+            this.setState({ disableCreate: !(this.state.name.length > 2)});}}
           clearButtonMode='while-editing'
           autoFocus={true}
           style={{
@@ -177,11 +192,12 @@ class Create extends React.Component {
           buttonStyle={{backgroundColor:"#2f3a49", borderWidth: 0}}
           textStyle={{color:'#fff'}} />
 
-      
-          <TouchableOpacity onPress={this.pickImage} style={{margin: 25}}>
-            <Text>Select Image</Text>
-
-          </TouchableOpacity>
+          <Button
+            title="Select Image"
+            loading={this.state.loading}
+            onPress={this.pickImage}
+            style={{margin: 20}}
+          />
 
         {<Toaster message={this.state.message} onHide={()=> {this.setState({message: null})}}/>}
          
