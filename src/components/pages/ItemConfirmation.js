@@ -95,7 +95,7 @@ class ItemConfirmation extends Component {
 			              height: null,
 			              borderRadius: 10
 			            }} 
-			            source={{ isStatic: true, uri: this.state.imagePath.uri }}
+			            source={{ isStatic: true, uri: this.state.imagefirebase }}
 			        />
 			    </View>
 

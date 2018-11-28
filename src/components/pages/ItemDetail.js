@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, Text,ScrollView, TextInput } from 'react-native';
+import { View, Image, Text,ScrollView, TextInput, Keyboard,  TouchableWithoutFeedback } from 'react-native';
 import { Dimensions } from 'react-native'
 import Moment from 'react-moment';
 import {format, compareAsc} from 'date-fns'
@@ -7,6 +7,12 @@ import ItemDetailPrice from './ItemDetailPrice'
 import ItemDetailDate from './ItemDetailDate'
 import ItemDetailsQuantity from './ItemDetailsQuantity'
 import ItemDetailInventory from './ItemDetailInventory'
+
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+);
 
 class ItemDetail extends React.Component{
 
@@ -19,7 +25,8 @@ class ItemDetail extends React.Component{
 		expirationDate = this.props.itemExpirationDate;
 		quantity = this.props.itemQuantity;
 		users = this.props.users;
-		return(		
+		return(	
+			<DismissKeyboard>	
 		    <ScrollView style={styles.scrollViewStyle}>
 
 		        <ItemDetailPrice itemPrice={price} sendPrice={this.props.sendPrice}>
@@ -51,6 +58,7 @@ class ItemDetail extends React.Component{
 			    </View>		
      
 		    </ScrollView>
+		    </DismissKeyboard>
 		);
 	}
 };

@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
-import { View, Image, Text,TextInput,Dimensions } from 'react-native';
+import { View, Image, Text,TextInput,Dimensions, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import Button from '../ui/AddInventoryButton';
+
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+);
 
 class ItemConfirmationDetailsPrice extends Component{
 
@@ -32,25 +38,27 @@ class ItemConfirmationDetailsPrice extends Component{
 	}
 
 	render(){
-		return(		
-			<View style={styles.priceContainer}>				
-				<View style={{paddingLeft: 10}}>
-					<Text style={{fontSize: 17, color: '#2F3A49'}}> Enter price:  
-					</Text>
-				</View>
-				
-	       		<View style={{paddingRight: 15,flexDirection: 'row'}}>
-	       			<Text style={{fontSize: 17, color: '#2F3A49'}}> $
-	       			</Text> 
-					<TextInput 
-					   style={{fontSize: 17, color: '#2F3A49'}}
-					   keyboardType='numeric'
-					   onChangeText={(text)=> this.onChangedPrice(text)}
-					   value={this.state.price}
-					   maxLength={10}  //setting limit of input
-					/>
-				</View>
-			</View>	
+		return(	
+			<DismissKeyboard>	
+				<View style={styles.priceContainer}>				
+					<View style={{paddingLeft: 10}}>
+						<Text style={{fontSize: 17, color: '#2F3A49'}}> Enter price:  
+						</Text>
+					</View>
+					
+		       		<View style={{paddingRight: 15,flexDirection: 'row'}}>
+		       			<Text style={{fontSize: 17, color: '#2F3A49'}}> $
+		       			</Text> 
+						<TextInput 
+						   style={{fontSize: 17, color: '#2F3A49'}}
+						   keyboardType='numeric'
+						   onChangeText={(text)=> this.onChangedPrice(text)}
+						   value={this.state.price}
+						   maxLength={10}  //setting limit of input
+						/>
+					</View>
+				</View>	
+			</DismissKeyboard>
 		);
 	}
 };
